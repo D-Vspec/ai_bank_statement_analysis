@@ -14,15 +14,15 @@ export function TransactionTable({ data }: { data: AnalysisData }) {
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null)
 
   // Get unique categories
-  const categories = Array.from(new Set(data.transaction_details.map((t) => t.category))).sort()
+  const categories = Array.from(new Set(data.transaction_details.map((t) => t.type))).sort()
 
   // Filter transactions
   const filteredTransactions = data.transaction_details.filter((transaction) => {
     const matchesSearch =
       transaction.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      transaction.category.toLowerCase().includes(searchTerm.toLowerCase())
+      transaction.type.toLowerCase().includes(searchTerm.toLowerCase())
 
-    const matchesCategory = categoryFilter === null || transaction.category === categoryFilter
+    const matchesCategory = categoryFilter === null || transaction.type === categoryFilter
 
     return matchesSearch && matchesCategory
   })
@@ -81,7 +81,7 @@ export function TransactionTable({ data }: { data: AnalysisData }) {
                 <TableRow key={index}>
                   <TableCell>{transaction.date}</TableCell>
                   <TableCell>{transaction.description}</TableCell>
-                  <TableCell className="capitalize">{transaction.category}</TableCell>
+                  <TableCell className="capitalize">{transaction.type}</TableCell>
                   <TableCell className={`text-right ${transaction.amount < 0 ? "text-rose-600" : "text-emerald-600"}`}>
                     {formatCurrency(transaction.amount)}
                   </TableCell>

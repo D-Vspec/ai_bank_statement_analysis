@@ -254,7 +254,7 @@ export function analyzeTransactions(rawTransactions: RawTransaction[], initialBa
     date: raw.date,
     description: raw.description,
     amount: raw.amount,
-    category: categorizeTransaction(raw.description, raw.type),
+    type: categorizeTransaction(raw.description, raw.type),
   }))
 
   // Sort transactions by date to ensure proper order
@@ -283,7 +283,7 @@ export function analyzeTransactions(rawTransactions: RawTransaction[], initialBa
     } else {
       totalExpenditure += transaction.amount
       // Add to category (amount is already negative)
-      expenditureByCategory[transaction.category] += transaction.amount
+      expenditureByCategory[transaction.type] += transaction.amount
     }
   })
 
@@ -316,7 +316,7 @@ export function getTransactionCounts(transactions: Transaction[]): { [key: strin
   transactions.forEach((transaction) => {
     if (transaction.amount < 0) {
       // Only count expenditures
-      counts[transaction.category]++
+      counts[transaction.type]++
     }
   })
 

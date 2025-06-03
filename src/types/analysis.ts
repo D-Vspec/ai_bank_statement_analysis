@@ -2,7 +2,7 @@ export interface Transaction {
   date: string
   description: string
   amount: number
-  category: string
+  type: string
 }
 
 export interface AnalysisData {
@@ -14,4 +14,36 @@ export interface AnalysisData {
     [key: string]: number
   }
   transaction_details: Transaction[]
+}
+
+export interface ExtractedPageData {
+  initial_balance?: number
+  transactions: Transaction[]
+}
+
+export interface ExtractionRequestBody {
+  images: string[]
+}
+
+export interface ExtractionResponse {
+  initial_balance: number | null
+  transactions: Transaction[]
+}
+
+export interface ExtractionErrorResponse {
+  error: string
+}
+
+// PDF Upload related types
+export interface PdfUploadProps {
+  onAnalysisComplete: (data: AnalysisData) => void
+}
+
+export interface ExtractionApiResponse {
+  transactions: Transaction[]
+  initial_balance?: number | null
+}
+
+export interface ExtractionApiError {
+  error: string
 }

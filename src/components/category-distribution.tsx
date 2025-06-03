@@ -1,5 +1,4 @@
 "use client"
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { Cell, Pie, PieChart } from "recharts"
@@ -9,7 +8,7 @@ import type { AnalysisData } from "@/types/analysis"
 export function CategoryDistribution({ data }: { data: AnalysisData }) {
   // Prepare chart data
   const chartData = Object.entries(data.expenditure_by_category)
-    .filter(([_, amount]) => amount !== 0) // Filter out zero amounts
+    .filter(([, amount]) => amount !== 0) // Filter out zero amounts
     .map(([category, amount]) => ({
       name: category.charAt(0).toUpperCase() + category.slice(1),
       value: Math.abs(amount), // Convert to positive for display

@@ -7,7 +7,7 @@ import type { AnalysisData } from "@/types/analysis"
 export function SummaryCards({ data }: { data: AnalysisData }) {
   // Get top categories by amount
   const topCategories = Object.entries(data.expenditure_by_category)
-    .filter(([_, amount]) => amount !== 0)
+    .filter(([, amount]) => amount !== 0)
     .sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]))
     .slice(0, 3)
 
@@ -18,7 +18,7 @@ export function SummaryCards({ data }: { data: AnalysisData }) {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium capitalize">{category}</CardTitle>
             <CardDescription>
-              {data.transaction_details.filter((t) => t.category === category).length} transactions
+              {data.transaction_details.filter((t) => t.type === category).length} transactions
             </CardDescription>
           </CardHeader>
           <CardContent>

@@ -8,10 +8,12 @@ import { Progress } from "@/components/ui/progress"
 import { Upload, FileText, X, CheckCircle, AlertCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { analyzeTransactions } from "@/lib/transaction-analyzer"
-
-interface PdfUploadProps {
-  onAnalysisComplete: (data: any) => void
-}
+import { 
+  type PdfUploadProps, 
+  type ExtractionApiResponse, 
+  type ExtractionApiError,
+  type AnalysisData 
+} from "@/types/analysis"
 
 export function PdfUpload({ onAnalysisComplete }: PdfUploadProps) {
   const [file, setFile] = useState<File | null>(null)
@@ -54,7 +56,8 @@ export function PdfUpload({ onAnalysisComplete }: PdfUploadProps) {
     setError(null)
     setStatus("Loading PDF.js...")
 
-    try {      // Dynamically import PDF.js
+    try {
+      // Dynamically import PDF.js
       const pdfjs = await import("pdfjs-dist")
       // Set up PDF.js worker
       pdfjs.GlobalWorkerOptions.workerSrc = new URL(
@@ -90,7 +93,11 @@ export function PdfUpload({ onAnalysisComplete }: PdfUploadProps) {
 
           // Create canvas
           const canvas = document.createElement("canvas")
-          const context = canvas.getContext("2d")!
+          const context = canvas.getContext("2d")
+          if (!context) {
+            throw new Error("Failed to get canvas context")
+          }
+          
           canvas.height = viewport.height
           canvas.width = viewport.width
 
@@ -138,11 +145,17 @@ export function PdfUpload({ onAnalysisComplete }: PdfUploadProps) {
       })
 
       if (!extractResponse.ok) {
-        const errorData = await extractResponse.json().catch(() => ({ error: "Unknown error" }))
+        let errorData: ExtractionApiError
+        try {
+          errorData = await extractResponse.json()
+        } catch {
+          errorData = { error: "Unknown error" }
+        }
         throw new Error(`Failed to extract transaction data: ${errorData.error || "Server error"}`)
       }
 
-      const { transactions, initial_balance } = await extractResponse.json()
+      const extractionResult: ExtractionApiResponse = await extractResponse.json()
+      const { transactions, initial_balance } = extractionResult
 
       if (!transactions || transactions.length === 0) {
         throw new Error("No transactions found in the PDF. Please ensure it's a valid bank statement.")
@@ -152,7 +165,7 @@ export function PdfUpload({ onAnalysisComplete }: PdfUploadProps) {
       setStatus("Analyzing transactions locally...")
 
       // Analyze transactions on client side
-      const analysis = analyzeTransactions(transactions, initial_balance || 0)
+      const analysis: AnalysisData = analyzeTransactions(transactions, initial_balance || 0)
 
       setProgress(100)
       setStatus("Analysis complete! Preparing dashboard...")
